@@ -17,6 +17,15 @@
   </div>
   <div class="col-8 h-100 environment-logs-column">
     <div *ngIf="selectedLog" class="environment-logs-content pl-2 pr-2">
+
+        <div class="row">
+            <div class="col">
+
+              <button type="button" class="btn btn-link btn-icon pl-2" (click)="saveRoute()">
+                <span><i class="material-icons">save</i> Save</span>
+              </button>
+            </div>
+          </div>
       <div class="environment-logs-content-title" (click)="generalCollapsed = !generalCollapsed">
         <i *ngIf="!generalCollapsed" class="material-icons">unfold_less</i>
         <i *ngIf="generalCollapsed" class="material-icons">unfold_more</i>
@@ -28,6 +37,9 @@
         </div>
         <div class="environment-logs-content-item">
           <strong>Method:</strong> {{selectedLog.method}}
+        </div>
+        <div class="environment-logs-content-item">
+          <strong>Status:</strong> {{selectedLog.responseStatusCode}} - {{selectedLog.responseStatusMessage}}
         </div>
         <div *ngIf="selectedLog.route" class="environment-logs-content-item">
           <strong>Caught by route:</strong> {{selectedLog.route}}
@@ -78,6 +90,28 @@
       </div>
       <div [ngbCollapse]="bodyCollapsed">
         <div class="environment-logs-content-item pre">{{selectedLog.body}}</div>
+      </div>
+
+      <!-- Response Headers -->
+      <div class="environment-logs-content-title" (click)="responseHeadersCollapsed = !responseHeadersCollapsed">
+        <i *ngIf="selectedLog.responseHeaders.length && !responseHeadersCollapsed" class="material-icons">unfold_less</i>
+        <i *ngIf="selectedLog.responseHeaders.length && responseHeadersCollapsed" class="material-icons">unfold_more</i>
+        Headers ({{selectedLog?.responseHeaders?.length}})
+      </div>
+      <div [ngbCollapse]="responseHeadersCollapsed">
+        <div class="environment-logs-content-item" *ngFor="let header of selectedLog?.responseHeaders">
+          <strong>{{header.name | titlecase}}:</strong> {{header.value}}
+        </div>
+      </div>
+
+      <!-- Response Body -->
+      <div class="environment-logs-content-title" (click)="responseBodyCollapsed = !responseBodyCollapsed">
+        <i *ngIf="selectedLog.responseBody && !responseBodyCollapsed" class="material-icons">unfold_less</i>
+        <i *ngIf="selectedLog.responseBody && responseBodyCollapsed" class="material-icons">unfold_more</i>
+        Body ({{(!selectedLog.responseBody)?'none': 'raw'}})
+      </div>
+      <div [ngbCollapse]="responseBodyCollapsed">
+        <div class="environment-logs-content-item pre">{{selectedLog.responseBody}}</div>
       </div>
     </div>
   </div>

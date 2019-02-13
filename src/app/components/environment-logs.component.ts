@@ -1,5 +1,7 @@
 import { Component, DoCheck, Input, KeyValueDiffer, KeyValueDiffers, OnInit } from '@angular/core';
 import { ServerService } from 'src/app/services/server.service';
+import { EnvironmentsService } from 'src/app/services/environments.service';
+import { DataService } from 'src/app/services/data.service';
 import { EnvironmentType } from 'src/app/types/environment.type';
 import { EnvironmentLogType } from 'src/app/types/server.type';
 
@@ -15,14 +17,16 @@ export class EnvironmentLogsComponent implements OnInit, DoCheck {
   public environmentsLogs = this.serverService.environmentsLogs;
   public generalCollapsed: boolean;
   public headersCollapsed: boolean;
+  public responseHeadersCollapsed: boolean;
   public routeParamsCollapsed: boolean;
   public queryParamsCollapsed: boolean;
   public bodyCollapsed: boolean;
+  public responseBodyCollapsed: boolean;
   private environmentsLogsDiffer: KeyValueDiffer<any, any>;
   private currentEnvironmentDiffer: KeyValueDiffer<any, any>;
   private currentLogsLastLength: number;
 
-  constructor(private serverService: ServerService, private keyValueDiffers: KeyValueDiffers) {
+  constructor(private serverService: ServerService, private keyValueDiffers: KeyValueDiffers, private environmentsService: EnvironmentsService, private dataService: DataService) {
     this.environmentsLogsDiffer = this.keyValueDiffers.find({}).create();
     this.currentEnvironmentDiffer = this.keyValueDiffers.find({}).create();
   }
@@ -76,12 +80,16 @@ export class EnvironmentLogsComponent implements OnInit, DoCheck {
     this.selectedLogIndex = logIndex;
     this.selectedLog = this.environmentsLogs[this.currentEnvironment.uuid][this.selectedLogIndex];
   }
-
+  public saveRoute() {
+    this.environmentsService.createRouteFromLog(this.currentEnvironment, this.selectedLog);
+  }
   private initCollapse() {
     this.generalCollapsed = false;
     this.headersCollapsed = false;
+    this.responseHeadersCollapsed = false;
     this.routeParamsCollapsed = false;
     this.queryParamsCollapsed = false;
     this.bodyCollapsed = true;
+    this.responseBodyCollapsed = true;
   }
 }

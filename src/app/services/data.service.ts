@@ -47,7 +47,7 @@ export class DataService {
    *
    * @param request
    */
-  public formatRequestLog(request: any): EnvironmentLogType {
+  public formatRequestLog(request: any, response: any): EnvironmentLogType {
     // use some getter to keep the scope because some request properties are be defined later by express (route, params, etc)
     const requestLog: EnvironmentLogType = {
       timestamp: new Date(),
@@ -58,6 +58,7 @@ export class DataService {
       protocol: request.protocol,
       url: request.originalUrl,
       headers: [],
+      responseHeaders: [],
       get proxied() {
         return request.proxied;
       },
@@ -89,7 +90,24 @@ export class DataService {
         }
 
         return truncatedBody;
-      }
+      },
+      get responseBody() {
+        const maxLength = 10000;
+        let truncatedBody: string = response.body;
+
+        // truncate
+        if (truncatedBody.length > maxLength) {
+          truncatedBody = truncatedBody.substring(0, maxLength) + '\n\n-------- BODY HAS BEEN TRUNCATED --------';
+        }
+
+        return truncatedBody;
+      },
+      get responseStatusCode() {
+        return response.statusCode;
+      },
+      get responseStatusMessage() {
+        return response.statusMessage;
+      },
     };
 
     // get and sort headers
@@ -97,6 +115,12 @@ export class DataService {
       return { name: headerName, value: request.headers[headerName] };
     }).sort(Utils.ascSort);
 
+    const responseHeaders = response.getHeaders();
+    requestLog.responseHeaders = Object.keys(responseHeaders).map((headerName) => {
+      return { name: headerName, value: responseHeaders[headerName] };
+    }).sort(Utils.ascSort);
+
     return requestLog;
   }
+
 }

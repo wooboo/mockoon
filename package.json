@@ -43,9 +43,9 @@
     "setversion": "node ./scripts/version-bump.js",
     "serve:electron": "electron ./dist --serve",
     "serve:app": "ng build --configuration=development --watch --output-hashing=all",
-    "build:dev": "rm -rf ./dist && ng build --prod --configuration=development",
-    "build:prod": "rm -rf ./dist && ng build --prod --configuration=production",
-    "clean-packages": "rm -rf ./packages",
+    "build:dev": "rimraf ./dist && ng build --prod --configuration=development",
+    "build:prod": "rimraf -rf ./dist && ng build --prod --configuration=production",
+    "clean-packages": "rimraf -rf ./packages",
     "package:win": "npm run clean-packages && electron-builder --win",
     "package:linux": "npm run clean-packages && electron-builder --linux",
     "package:mac": "npm run clean-packages && electron-builder --mac"

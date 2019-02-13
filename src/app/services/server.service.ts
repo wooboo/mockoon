@@ -356,8 +356,27 @@ export class ServerService {
         environmentLogs.pop();
       }
 
-      environmentLogs.unshift(this.dataService.formatRequestLog(req));
+      const oldWrite = res.write,
+      oldEnd = res.end;
 
+      const chunks = [];
+
+      res.write = (chunk) => {
+        chunks.push(Buffer.from(chunk));
+
+        oldWrite.apply(res, arguments);
+      };
+
+      res.end = (chunk) => {
+        if (chunk) {
+          chunks.push(Buffer.from(chunk));
+        }
+
+        res.body = Buffer.concat(chunks).toString('utf8');
+        environmentLogs.unshift(this.dataService.formatRequestLog(req, res));
+
+        oldEnd.apply(res, arguments);
+      };
       next();
     });
   }

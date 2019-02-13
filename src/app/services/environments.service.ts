@@ -18,6 +18,7 @@ import { DataSubjectType, ExportType } from 'src/app/types/data.type';
 import { CurrentEnvironmentType, EnvironmentsType, EnvironmentType } from 'src/app/types/environment.type';
 import { CORSHeaders, HeaderType, RouteType } from 'src/app/types/route.type';
 import * as uuid from 'uuid/v1';
+import { EnvironmentLogType } from '../types/server.type';
 
 @Injectable()
 export class EnvironmentsService {
@@ -171,7 +172,21 @@ export class EnvironmentsService {
 
     return newRouteIndex;
   }
+  public createRouteFromLog(environment: EnvironmentType, route: EnvironmentLogType): number {
+    const newRoute = Object.assign({}, this.routeSchema, { uuid: uuid(), headers: [Object.assign({}, this.routeHeadersSchema, { uuid: uuid() })] });
+    newRoute.method = <'get' | 'post' | 'put' | 'patch' | 'delete' | 'head'>route.method;
+    newRoute.endpoint = route.url;
+    newRoute.body = route.body;
+    newRoute.statusCode  = route.responseStatusCode.toString();
 
+    const newRouteIndex = environment.routes.push(newRoute) - 1;
+
+    this.eventsService.analyticsEvents.next(AnalyticsEvents.CREATE_ROUTE);
+
+    this.environmentUpdateEvents.next({ environment });
+
+    return newRouteIndex;
+  }
   /**
    * Remove a route and save
    *

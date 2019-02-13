@@ -14,6 +14,10 @@ export type EnvironmentLogType = {
   queryParams: { name: string, value: string }[];
   body: string;
   proxied: boolean;
+  responseHeaders: { name: string, value: string }[];
+  responseBody: string;
+  responseStatusCode: number;
+  responseStatusMessage: string;
 };
 
 export type EnvironmentLogsType = { [key: string]: EnvironmentLogType[] };
