@@ -172,12 +172,12 @@ export class EnvironmentsService {
 
     return newRouteIndex;
   }
-  public createRouteFromLog(environment: EnvironmentType, route: EnvironmentLogType): number {
+  public createRouteFromLog(environment: EnvironmentType, log: EnvironmentLogType): number {
     const newRoute = Object.assign({}, this.routeSchema, { uuid: uuid(), headers: [Object.assign({}, this.routeHeadersSchema, { uuid: uuid() })] });
-    newRoute.method = <'get' | 'post' | 'put' | 'patch' | 'delete' | 'head'>route.method;
-    newRoute.endpoint = route.url;
-    newRoute.body = route.body;
-    newRoute.statusCode  = route.responseStatusCode.toString();
+    newRoute.method = <'get' | 'post' | 'put' | 'patch' | 'delete' | 'head'>log.method.toLowerCase();
+    newRoute.endpoint = log.params[0].value.substring(1);
+    newRoute.body = log.responseBody;
+    newRoute.statusCode  = log.responseStatusCode.toString();
 
     const newRouteIndex = environment.routes.push(newRoute) - 1;
 
